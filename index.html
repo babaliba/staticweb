@@ -1,0 +1,910 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GUSTURA – Cuestionario (offline)</title>
+  <style>
+    :root {
+      --bg: #0b0c0f;
+      --card: #141621;
+      --muted: #9aa3b2;
+      --text: #eef2ff;
+      --accent: #6ea8fe;
+      --danger: #ff6b6b;
+      --ok: #69db7c;
+      --border: rgba(255,255,255,0.10);
+      --shadow: 0 18px 55px rgba(0,0,0,0.55);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif;
+      background: radial-gradient(1100px 700px at 20% 10%, rgba(110,168,254,0.18), transparent 60%),
+                  radial-gradient(900px 600px at 90% 20%, rgba(105,219,124,0.12), transparent 55%),
+                  var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 24px 14px 44px;
+    }
+    .wrap { max-width: 980px; margin: 0 auto; }
+    header {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    h1 { font-size: 20px; margin: 0 0 4px; letter-spacing: 0.2px; }
+    .sub { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.35; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+    .topbar {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .progress {
+      height: 10px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      overflow: hidden;
+      flex: 1;
+    }
+    .progress > div {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), rgba(110,168,254,0.55));
+      border-right: 1px solid rgba(255,255,255,0.25);
+      transition: width 240ms ease;
+    }
+    .meta { color: var(--muted); font-size: 13px; min-width: 180px; text-align: right; }
+    .sectionTitle { font-size: 16px; margin: 0 0 6px; }
+    .questionText { font-size: 18px; line-height: 1.35; margin: 10px 0 14px; }
+    .options { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 14px 0 12px; }
+    .opt {
+      position: relative;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: rgba(255,255,255,0.03);
+      padding: 12px 10px;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 120ms ease, border-color 150ms ease, background 150ms ease;
+      min-height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-size: 13px;
+      color: #d7def0;
+    }
+    .opt:hover { transform: translateY(-1px); border-color: rgba(110,168,254,0.55); }
+    .opt input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+    .opt.selected {
+      background: rgba(110,168,254,0.18);
+      border-color: rgba(110,168,254,0.75);
+      color: var(--text);
+    }
+    .hint { color: var(--muted); font-size: 12px; margin-top: 4px; }
+    textarea {
+      width: 100%;
+      min-height: 160px;
+      resize: vertical;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,0.25);
+      color: var(--text);
+      padding: 12px 12px;
+      font-size: 14px;
+      line-height: 1.4;
+      outline: none;
+    }
+    textarea:focus {
+      border-color: rgba(110,168,254,0.7);
+      box-shadow: 0 0 0 3px rgba(110,168,254,0.14);
+    }
+    .actions { display: flex; gap: 10px; justify-content: space-between; align-items: center; margin-top: 14px; flex-wrap: wrap; }
+    .btnRow { display: flex; gap: 10px; flex-wrap: wrap; }
+    button {
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: transform 120ms ease, border-color 150ms ease, background 150ms ease;
+    }
+    button:hover { transform: translateY(-1px); border-color: rgba(255,255,255,0.22); }
+    button.primary { background: rgba(110,168,254,0.18); border-color: rgba(110,168,254,0.75); }
+    button.danger { background: rgba(255,107,107,0.14); border-color: rgba(255,107,107,0.55); }
+    button:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+    .small { color: var(--muted); font-size: 12px; margin: 0; }
+    .divider { height: 1px; background: var(--border); margin: 14px 0; }
+    table { width: 100%; border-collapse: collapse; border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+    th, td { padding: 10px 10px; border-bottom: 1px solid var(--border); text-align: left; font-size: 13px; vertical-align: top; }
+    th { background: rgba(255,255,255,0.06); color: #d7def0; font-weight: 600; }
+    tr:last-child td { border-bottom: 0; }
+    .right { text-align: right; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
+    .notice {
+      padding: 10px 12px;
+      border: 1px dashed rgba(255,255,255,0.22);
+      border-radius: 14px;
+      background: rgba(255,255,255,0.03);
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+    @media (max-width: 760px) {
+      .options { grid-template-columns: 1fr; }
+      .meta { min-width: auto; text-align: left; }
+      .topbar { flex-direction: column; align-items: stretch; }
+    }
+    @media print {
+      body { background: #fff; color: #000; padding: 0; }
+      .chip, .actions, .topbar, .notice { display: none !important; }
+      .card { box-shadow: none; border: 0; padding: 0; background: transparent; }
+      table, th, td { border-color: #999; }
+      th { background: #eee; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>GUSTURA – Cuestionario (offline)</h1>
+        <p class="sub">Prototipo sin servidor: 1 pregunta por pantalla, guardado local, y resumen final con totales por sección.</p>
+      </div>
+      <div class="chip" id="statusChip">Listo</div>
+    </header>
+
+    <div class="card" id="app"></div>
+
+    <p class="small" style="margin-top:10px">
+      Atajos: <span class="mono">1–4</span> para elegir opción · <span class="mono">Enter</span> siguiente · <span class="mono">Backspace</span> anterior (si no estás escribiendo)
+    </p>
+  </div>
+
+  <script>
+  "use strict";
+
+  const SURVEY = {
+  "title": "HERRAMIENTA DIAGNÓSTICA GUSTURA- CONVIVENCIA",
+  "sections": [
+    {
+      "id": "S1",
+      "title": "Sentido de pertenencia",
+      "hasObservations": true,
+      "scaleLabels": [
+        "Totalmente en desacuerdo",
+        "En desacuerdo",
+        "De acuerdo",
+        "Totalmente de acuerdo"
+      ],
+      "questions": [
+        "Me identifico con esta empresa/centro/municipio al que pertenezco.",
+        "Puedo ser yo mismo/a dentro de la empresa/centro/municipio sin temor a ser juzgado/a.",
+        "Me siento a gusto en esta empresa/centro/municipio.",
+        "Estoy orgulloso/a de formar parte de esta empresa/centro/municipio."
+      ]
+    },
+    {
+      "id": "S2",
+      "title": "Comunicación",
+      "hasObservations": true,
+      "scaleLabels": [
+        "Totalmente en desacuerdo",
+        "En desacuerdo",
+        "De acuerdo",
+        "Totalmente de acuerdo"
+      ],
+      "questions": [
+        "La frecuencia con la que la empresa/centro/municipio comparte información permite seguir el día a día sin sentir falta de comunicación ni saturación.",
+        "Considero que la información que se comparte en la empresa/centro/municipio es clara y fácil de entender.",
+        "Considero que todas las personas tenemos la oportunidad de expresar en la empresa/centro/municipio.",
+        "Considero que todas las personas tenemos la oportunidad de recibir información en la empresa/centro/municipio.",
+        "La información en la empresa/centro/municipio se ofrece en diferentes idiomas y/o formas, asegurando que toda la comunidad tenga acceso a la misma",
+        "Para mí, la información sobre la empresa/centro/municipio es fácil de acceder.",
+        "Me siento a gusto usando los espacios /canales disponibles para comunicarnos en la empresa/centro/municipio.",
+        "Estoy satisfecho/a con la comunicación que se da dentro del empresa/centro/municipio."
+      ]
+    },
+    {
+      "id": "S3",
+      "title": "Participación",
+      "hasObservations": false,
+      "scaleLabels": [
+        "Totalmente en desacuerdo",
+        "En desacuerdo",
+        "De acuerdo",
+        "Totalmente de acuerdo"
+      ],
+      "questions": [
+        "Participo de manera frecuente en las actividades de la empresa/centro/municipio.",
+        "Considero que las personas que conformamos de la empresa/centro/municipio generalmente participan en las actividades de la empresa/centro/municipio.",
+        "Siento que mi voz es escuchada y tiene influencia en las decisiones de la empresa/centro/municipio.",
+        "Siento que la empresa/centro/municipio es diverso y se garantiza la igualdad de oportunidades para participar.",
+        "Percibo colaboración y apoyo entre las personas para lograr los objetivos de la empresa/centro/municipio.",
+        "Estoy satisfecho/a con mi aportación dentro del empresa/centro/municipio."
+      ]
+    },
+    {
+      "id": "S4",
+      "title": "Relaciones y reciprocidad",
+      "hasObservations": false,
+      "scaleLabels": [
+        "Totalmente en desacuerdo",
+        "En desacuerdo",
+        "De acuerdo",
+        "Totalmente de acuerdo"
+      ],
+      "questions": [
+        "Interactúo con una variedad de personas dentro de la empresa/centro/municipio.",
+        "Me siento cómodo/a y bien recibido/a interactuando con las personas de la empresa/centro/municipio.",
+        "Me esfuerzo por comprender y valorar las distintas formas de ser de quienes integran la empresa/centro/municipio.",
+        "Considero que las relaciones con personas diversas me enriquecen y favorecen el aprendizaje mutuo.",
+        "Considero que las relaciones en la empresa/centro/municipio se dan en un clima de respeto y confianza.",
+        "Me siento orgulloso/a de las relaciones que establezco en la empresa/centro/municipio."
+      ]
+    },
+    {
+      "id": "S5",
+      "title": "Equidad e inclusión",
+      "hasObservations": true,
+      "scaleLabels": [
+        "Totalmente en desacuerdo",
+        "En desacuerdo",
+        "De acuerdo",
+        "Totalmente de acuerdo"
+      ],
+      "questions": [
+        "Las diferencias de cultura son respetadas y valoradas.",
+        "Las diferencias de género son respetadas y valoradas.",
+        "Las diferencias lingüísticas son respetadas y valoradas.",
+        "Se toman medidas específicas para apoyar a quienes tienen más dificultades.",
+        "Los valores que guían mi comportamiento habitual están alineados con los valores fundamentales de esta empresa/centro/municipio.",
+        "Los valores fundamentales de la empresa/centro/municipio se reflejan claramente en las acciones cotidianas.",
+        "Siento que me tratan de forma justa e igual que a las demás personas en mi empresa/centro/municipio."
+      ]
+    },
+    {
+      "id": "S6",
+      "title": "Gestión de conflictos",
+      "hasObservations": true,
+      "scaleLabels": [
+        "Totalmente en desacuerdo",
+        "En desacuerdo",
+        "De acuerdo",
+        "Totalmente de acuerdo"
+      ],
+      "questions": [
+        "Percibo conflictos en la empresa/centro/municipio que impactan negativamente en la convivencia.",
+        "Los conflictos existentes dentro de la empresa/centro/municipio tienen que ver principalmente con la diversidad dentro de la empresa/centro/municipio.",
+        "Los conflictos existentes dentro de la empresa/centro/municipio tienen que ver con las relaciones que se dan dentro de la empresa/centro/municipio.",
+        "Existen recursos y protocolos claros para gestionar conflictos cuando surgen.",
+        "He presenciado o vivido conflictos que se han tratado de forma constructiva.",
+        "Cuando se produce un conflicto, la persona que lidera empresa/centro/municipio están dispuestos a ofrecer ayuda o soluciones.",
+        "Se realiza un seguimiento de los conflictos para evitar que se repitan en el futuro.",
+        "Estoy satisfecho/a con la forma en que se resuelven los conflictos.",
+        "Me siento seguro/a para expresar un problema sin temor a represalias."
+      ]
+    },
+    {
+      "id": "S7",
+      "title": "Estrategia",
+      "hasObservations": false,
+      "scaleLabels": [
+        "Totalmente en desacuerdo",
+        "En desacuerdo",
+        "De acuerdo",
+        "Totalmente de acuerdo"
+      ],
+      "questions": [
+        "Existen unas políticas/directrices claras sobre convivencia dentro del empresa/centro/municipio.",
+        "Las personas de la empresa/centro/municipio conocemos y comprendemos las estrategias de convivencia implementadas.",
+        "Se destinan recursos adecuados para promover la convivencia y prevenir conflictos.",
+        "Se evalúa y mejora continuamente la convivencia dentro de la empresa/centro/municipio.",
+        "Me siento satisfecho/a con las acciones implementadas para la convivencia."
+      ]
+    },
+    {
+      "id": "S8",
+      "title": "Valoración global",
+      "hasObservations": true,
+      "scaleLabels": [
+        "1-Totalmente en desacuerdo",
+        "En desacuerdo",
+        "De acuerdo",
+        "Totalmente de acuerdo"
+      ],
+      "questions": [
+        "Me siento satisfecho/a con la convivencia en esta empresa/centro/municipio."
+      ]
+    }
+  ],
+  "openQuestions": [
+    "¿Qué aspectos valoras más positivamente de la convivencia en tu comunidad/entorno?",
+    "¿Qué situaciones o actitudes consideras que dificultan una buena convivencia?",
+    "¿Qué cambios o mejoras te gustaría que se implementaran para favorecer la convivencia?",
+    "¿Qué acciones, actividades o iniciativas conoces que hayan contribuido a mejorar la convivencia?",
+    "Si pudieras proponer una medida concreta para fortalecer la convivencia, ¿cuál sería?"
+  ]
+};
+
+  // Scoring note:
+  // - By default, totals are raw sums (1..4).
+  // - If you ever need reverse-coding for certain items, set reverse=true in responsesConfig below
+  //   and the score will be computed as (5 - value).
+  const responsesConfig = {
+    // Example:
+    // "S6:0": { reverse: true },
+  };
+
+  const STORAGE_KEY = "gustura_survey_state_v1";
+  const AUTO_ADVANCE_MS = 180;
+
+  function nowISO() { return new Date().toISOString(); }
+  function deepClone(obj) { return JSON.parse(JSON.stringify(obj)); }
+
+  function buildSteps() {
+    const steps = [];
+    SURVEY.sections.forEach((sec) => {
+      sec.questions.forEach((q, idx) => {
+        steps.push({ type: "likert", sectionId: sec.id, sectionTitle: sec.title, qIndex: idx, text: q, scaleLabels: sec.scaleLabels });
+      });
+      if (sec.hasObservations) {
+        steps.push({ type: "observations", sectionId: sec.id, sectionTitle: sec.title, text: "Observaciones (opcional)" });
+      }
+    });
+    SURVEY.openQuestions.forEach((q, idx) => steps.push({ type: "open", openIndex: idx, text: q }));
+    steps.push({ type: "results" });
+    return steps;
+  }
+
+  const STEPS = buildSteps();
+
+  function defaultState() {
+    return {
+      meta: {
+        createdAt: nowISO(),
+        lastUpdatedAt: nowISO(),
+        title: SURVEY.title,
+        prototype: "GUSTURA offline wizard",
+        version: 1
+      },
+      cursor: 0,
+      answers: {
+        likert: {},        // key: "S1:0" -> 1..4
+        observations: {},  // key: "S1" -> string
+        open: {}           // key: "O0" -> string
+      }
+    };
+  }
+
+  function saveState(state) {
+    state.meta.lastUpdatedAt = nowISO();
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    updateChip("Guardado", "ok");
+  }
+
+  function loadState() {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    try { return JSON.parse(raw); } catch { return null; }
+  }
+
+  function clearState() { localStorage.removeItem(STORAGE_KEY); }
+
+  function updateChip(text, tone) {
+    const chip = document.getElementById("statusChip");
+    chip.textContent = text;
+    chip.style.borderColor = tone === "ok" ? "rgba(105,219,124,0.55)" :
+                           tone === "danger" ? "rgba(255,107,107,0.55)" : "rgba(255,255,255,0.18)";
+    chip.style.background = tone === "ok" ? "rgba(105,219,124,0.14)" :
+                          tone === "danger" ? "rgba(255,107,107,0.14)" : "rgba(255,255,255,0.06)";
+  }
+
+  function isTypingTarget(el) {
+    if (!el) return false;
+    const tag = (el.tagName || "").toLowerCase();
+    return tag === "textarea" || tag === "input" || el.isContentEditable;
+  }
+
+  function scoreValue(stepKey, v) {
+    const cfg = responsesConfig[stepKey];
+    if (cfg && cfg.reverse === true) return 5 - v;
+    return v;
+  }
+
+  function computeSectionStats(state) {
+    const bySection = {};
+    SURVEY.sections.forEach((sec) => {
+      const keys = sec.questions.map((_, idx) => `${sec.id}:${idx}`);
+      let answered = 0;
+      let rawSum = 0;
+      let scoredSum = 0;
+
+      keys.forEach((k) => {
+        const v = state.answers.likert[k];
+        if (typeof v === "number") {
+          answered += 1;
+          rawSum += v;
+          scoredSum += scoreValue(k, v);
+        }
+      });
+
+      const max = sec.questions.length * 4;
+      bySection[sec.id] = {
+        sectionId: sec.id,
+        title: sec.title,
+        nQuestions: sec.questions.length,
+        answered,
+        max,
+        rawSum,
+        rawAvg: answered ? rawSum / answered : 0,
+        scoredSum,
+        scoredAvg: answered ? scoredSum / answered : 0,
+        observations: state.answers.observations[sec.id] || ""
+      };
+    });
+    return bySection;
+  }
+
+  function downloadBlob(filename, mime, content) {
+    const blob = new Blob([content], { type: mime });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 700);
+  }
+
+  function escapeCSV(s) {
+    const v = (s ?? "").toString();
+    if (/[",\n]/.test(v)) return '"' + v.replace(/"/g, '""') + '"';
+    return v;
+  }
+
+  function stateToCSV(state) {
+    const rows = [];
+    rows.push(["type","sectionId","sectionTitle","questionIndex","questionText","value","valueLabel"].join(","));
+
+    SURVEY.sections.forEach((sec) => {
+      sec.questions.forEach((q, idx) => {
+        const key = `${sec.id}:${idx}`;
+        const v = state.answers.likert[key];
+        const label = typeof v === "number" ? sec.scaleLabels[v-1] : "";
+        rows.push(["likert", sec.id, escapeCSV(sec.title), idx+1, escapeCSV(q), (v ?? ""), escapeCSV(label)].join(","));
+      });
+
+      if (sec.hasObservations) {
+        rows.push(["observations", sec.id, escapeCSV(sec.title), "", escapeCSV("Observaciones"), escapeCSV(state.answers.observations[sec.id] || ""), ""].join(","));
+      }
+    });
+
+    SURVEY.openQuestions.forEach((q, idx) => {
+      const key = `O${idx}`;
+      rows.push(["open", "", "", idx+1, escapeCSV(q), escapeCSV(state.answers.open[key] || ""), ""].join(","));
+    });
+
+    return rows.join("\n");
+  }
+
+  function renderStartScreen(state, existing) {
+    const app = document.getElementById("app");
+    app.innerHTML = `
+      <div class="notice">
+        <div style="font-weight:600; color:#d7def0; margin-bottom:6px">Cómo funciona</div>
+        Vas respondiendo una pregunta por pantalla. Se guarda automáticamente en tu navegador (localStorage).
+        Al final verás un resumen con totales por sección y podrás exportar a JSON/CSV o imprimir.
+        <div style="margin-top:8px">Nota: los totales son sumas directas (1..4). No se aplica recodificación inversa por defecto.</div>
+      </div>
+      <div class="divider"></div>
+      <div class="actions">
+        <div class="btnRow">
+          <button class="primary" id="btnStart">${existing ? "Continuar" : "Empezar"}</button>
+          ${existing ? '<button id="btnRestart" class="danger">Empezar de cero</button>' : ''}
+        </div>
+        <p class="small">
+          ${existing
+            ? `Progreso guardado: paso ${(state.cursor+1)} / ${STEPS.length} · Última actualización: ${new Date(state.meta.lastUpdatedAt).toLocaleString()}`
+            : "Sin respuestas guardadas."
+          }
+        </p>
+      </div>
+    `;
+
+    document.getElementById("btnStart").onclick = () => goTo(state, existing ? state.cursor : 0);
+    setTimeout(() => {
+      const btn = document.getElementById("btnStart");
+      if (btn) btn.focus();
+    }, 40);
+
+    const r = document.getElementById("btnRestart");
+    if (r) r.onclick = () => {
+      clearState();
+      const fresh = defaultState();
+      saveState(fresh);
+      updateChip("Reiniciado", "danger");
+      renderStartScreen(fresh, false);
+    };
+  }
+
+  function renderStep(state) {
+    const app = document.getElementById("app");
+    const idx = state.cursor;
+    const step = STEPS[idx];
+
+    const pct = Math.round(((idx) / (STEPS.length - 1)) * 100);
+    const top = `
+      <div class="topbar">
+        <div class="progress"><div style="width:${pct}%"></div></div>
+        <div class="meta">Paso ${idx+1} / ${STEPS.length}</div>
+      </div>
+    `;
+
+    if (step.type === "likert") {
+      const key = `${step.sectionId}:${step.qIndex}`;
+      const current = state.answers.likert[key];
+
+      const options = step.scaleLabels.map((label, i) => {
+        const v = i + 1;
+        const selected = (current === v) ? "selected" : "";
+        return `
+          <label class="opt ${selected}" data-value="${v}">
+            <input type="radio" name="opt" value="${v}" ${selected ? "checked" : ""} />
+            <div>${label}</div>
+          </label>
+        `;
+      }).join("");
+
+      const secPos = SURVEY.sections.findIndex(s => s.id === step.sectionId) + 1;
+      const sec = SURVEY.sections[secPos-1];
+
+      app.innerHTML = `
+        ${top}
+        <div>
+          <h2 class="sectionTitle">Sección ${secPos}/${SURVEY.sections.length} · ${step.sectionTitle}</h2>
+          <div class="hint">Pregunta ${step.qIndex + 1} de ${sec.questions.length}</div>
+          <div class="questionText">${step.text}</div>
+          <div class="options" id="options">${options}</div>
+          <div class="hint">Elige 1 opción para continuar.</div>
+
+          <div class="actions">
+            <div class="btnRow">
+              <button id="btnPrev">Anterior</button>
+              <button class="primary" id="btnNext" ${typeof current === "number" ? "" : "disabled"}>Siguiente</button>
+            </div>
+            <div class="btnRow">
+              <button id="btnSave">Guardar</button>
+              <button id="btnReset" class="danger">Borrar todo</button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      const opts = app.querySelectorAll(".opt");
+      opts.forEach((el) => {
+        el.addEventListener("click", () => {
+          const v = Number(el.dataset.value);
+          state.answers.likert[key] = v;
+          saveState(state);
+          opts.forEach(o => o.classList.remove("selected"));
+          el.classList.add("selected");
+          app.querySelector("#btnNext").disabled = false;
+          if (state.cursor < STEPS.length - 1) {
+            setTimeout(() => goTo(state, state.cursor + 1), AUTO_ADVANCE_MS);
+          }
+        });
+      });
+
+      hookNavButtons(state);
+      return;
+    }
+
+    if (step.type === "observations") {
+      const current = state.answers.observations[step.sectionId] || "";
+      const secPos = SURVEY.sections.findIndex(s => s.id === step.sectionId) + 1;
+
+      app.innerHTML = `
+        ${top}
+        <div>
+          <h2 class="sectionTitle">Sección ${secPos}/${SURVEY.sections.length} · ${step.sectionTitle}</h2>
+          <div class="questionText">${step.text}</div>
+          <textarea id="txtObs" placeholder="Escribe aquí tus observaciones... (opcional)">${current}</textarea>
+
+          <div class="actions">
+            <div class="btnRow">
+              <button id="btnPrev">Anterior</button>
+              <button class="primary" id="btnNext">Siguiente</button>
+            </div>
+            <div class="btnRow">
+              <button id="btnSave">Guardar</button>
+              <button id="btnReset" class="danger">Borrar todo</button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      const txt = app.querySelector("#txtObs");
+      txt.addEventListener("input", () => {
+        state.answers.observations[step.sectionId] = txt.value;
+        saveState(state);
+      });
+
+      hookNavButtons(state);
+      return;
+    }
+
+    if (step.type === "open") {
+      const key = `O${step.openIndex}`;
+      const current = state.answers.open[key] || "";
+
+      app.innerHTML = `
+        ${top}
+        <div>
+          <h2 class="sectionTitle">Preguntas abiertas</h2>
+          <div class="hint">Pregunta ${step.openIndex + 1} de ${SURVEY.openQuestions.length}</div>
+          <div class="questionText">${step.text}</div>
+          <textarea id="txtOpen" placeholder="Escribe tu respuesta...">${current}</textarea>
+
+          <div class="actions">
+            <div class="btnRow">
+              <button id="btnPrev">Anterior</button>
+              <button class="primary" id="btnNext">Siguiente</button>
+            </div>
+            <div class="btnRow">
+              <button id="btnSave">Guardar</button>
+              <button id="btnReset" class="danger">Borrar todo</button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      const txt = app.querySelector("#txtOpen");
+      txt.addEventListener("input", () => {
+        state.answers.open[key] = txt.value;
+        saveState(state);
+      });
+
+      hookNavButtons(state);
+      return;
+    }
+
+    if (step.type === "results") {
+      const stats = computeSectionStats(state);
+
+      const rows = SURVEY.sections.map((sec) => {
+        const st = stats[sec.id];
+        const pctRaw = st.max ? Math.round((st.rawSum / st.max) * 100) : 0;
+        return `
+          <tr>
+            <td>${sec.title}</td>
+            <td class="right mono">${st.answered} / ${st.nQuestions}</td>
+            <td class="right mono">${st.rawSum} / ${st.max}</td>
+            <td class="right mono">${st.rawAvg.toFixed(2)}</td>
+            <td class="right mono">${pctRaw}%</td>
+          </tr>
+        `;
+      }).join("");
+
+      const overall = SURVEY.sections.reduce((acc, sec) => {
+        const st = stats[sec.id];
+        acc.answered += st.answered;
+        acc.n += st.nQuestions;
+        acc.sum += st.rawSum;
+        acc.max += st.max;
+        return acc;
+      }, {answered:0, n:0, sum:0, max:0});
+
+      const overallAvg = overall.answered ? (overall.sum/overall.answered) : 0;
+      const overallPct = overall.max ? Math.round((overall.sum/overall.max)*100) : 0;
+
+      const exportObj = {
+        ...deepClone(state),
+        computed: {
+          sections: stats,
+          overall: {
+            answered: overall.answered,
+            nQuestions: overall.n,
+            rawSum: overall.sum,
+            max: overall.max,
+            rawAvg: overallAvg,
+            rawPct: overallPct
+          }
+        }
+      };
+
+      app.innerHTML = `
+        ${top}
+        <div>
+          <h2 class="sectionTitle">Resumen de resultados</h2>
+
+          <div class="notice" style="margin-bottom:12px">
+            Totales por sección calculados como suma directa (1..4) y su porcentaje sobre el máximo.
+            Si quieres recodificación inversa en ciertos ítems, edita <span class="mono">responsesConfig</span> dentro del HTML.
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Sección</th>
+                <th class="right">Respondidas</th>
+                <th class="right">Total</th>
+                <th class="right">Media</th>
+                <th class="right">% Máx</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rows}
+              <tr>
+                <th>Total global</th>
+                <th class="right mono">${overall.answered} / ${overall.n}</th>
+                <th class="right mono">${overall.sum} / ${overall.max}</th>
+                <th class="right mono">${overallAvg.toFixed(2)}</th>
+                <th class="right mono">${overallPct}%</th>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="divider"></div>
+
+          <div class="actions">
+            <div class="btnRow">
+              <button id="btnPrev">Anterior</button>
+              <button class="primary" id="btnPrint">Imprimir</button>
+              <button id="btnJSON">Exportar JSON</button>
+              <button id="btnCSV">Exportar CSV</button>
+            </div>
+            <div class="btnRow">
+              <button id="btnCopy">Copiar JSON al portapapeles</button>
+              <button id="btnReset" class="danger">Borrar todo</button>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+          <div class="notice">
+            <div style="font-weight:600; color:#d7def0; margin-bottom:6px">Incluye también</div>
+            Observaciones por sección y las respuestas de preguntas abiertas (no puntúan) dentro del JSON/CSV.
+          </div>
+        </div>
+      `;
+
+      document.getElementById("btnPrint").onclick = () => window.print();
+      document.getElementById("btnJSON").onclick = () => {
+        downloadBlob(`gustura_resultados_${new Date().toISOString().slice(0,10)}.json`, "application/json;charset=utf-8", JSON.stringify(exportObj, null, 2));
+      };
+      document.getElementById("btnCSV").onclick = () => {
+        downloadBlob(`gustura_resultados_${new Date().toISOString().slice(0,10)}.csv`, "text/csv;charset=utf-8", stateToCSV(state));
+      };
+      document.getElementById("btnCopy").onclick = async () => {
+        try {
+          await navigator.clipboard.writeText(JSON.stringify(exportObj, null, 2));
+          updateChip("Copiado", "ok");
+        } catch (e) {
+          updateChip("No se pudo copiar", "danger");
+          alert("No se pudo copiar al portapapeles. Prueba con Exportar JSON.");
+        }
+      };
+
+      hookNavButtons(state);
+      return;
+    }
+  }
+
+  function hookNavButtons(state) {
+    const app = document.getElementById("app");
+
+    const btnPrev = app.querySelector("#btnPrev");
+    const btnNext = app.querySelector("#btnNext");
+    const btnSave = app.querySelector("#btnSave");
+    const btnReset = app.querySelector("#btnReset");
+
+    if (btnPrev) {
+      btnPrev.disabled = (state.cursor <= 0);
+      btnPrev.onclick = () => goTo(state, Math.max(0, state.cursor - 1));
+    }
+
+    if (btnNext) {
+      btnNext.onclick = () => goTo(state, Math.min(STEPS.length - 1, state.cursor + 1));
+    }
+
+    if (btnSave) btnSave.onclick = () => saveState(state);
+
+    if (btnReset) {
+      btnReset.onclick = () => {
+        if (!confirm("¿Seguro que quieres borrar todas las respuestas guardadas en este navegador?")) return;
+        clearState();
+        const fresh = defaultState();
+        saveState(fresh);
+        updateChip("Borrado", "danger");
+        renderStartScreen(fresh, false);
+      };
+    }
+
+    document.onkeydown = (ev) => {
+      if (isTypingTarget(document.activeElement)) return;
+
+      if (ev.key === "Backspace") {
+        if (btnPrev && !btnPrev.disabled) { ev.preventDefault(); btnPrev.click(); }
+      }
+
+      if (ev.key === "Enter") {
+        if (btnNext && !btnNext.disabled) { ev.preventDefault(); btnNext.click(); }
+      }
+
+      const step = STEPS[state.cursor];
+      if (step && step.type === "likert") {
+        const n = Number(ev.key);
+        if (n >= 1 && n <= 4) {
+          const key = `${step.sectionId}:${step.qIndex}`;
+          state.answers.likert[key] = n;
+          saveState(state);
+          renderStep(state);
+          if (state.cursor < STEPS.length - 1) {
+            setTimeout(() => goTo(state, state.cursor + 1), AUTO_ADVANCE_MS);
+          }
+        }
+      }
+    };
+  }
+
+  function goTo(state, newCursor) {
+    state.cursor = newCursor;
+    saveState(state);
+    renderStep(state);
+    updateChip("En curso", "");
+
+    setTimeout(() => {
+      const first = document.querySelector("#options input, textarea");
+      if (first) first.focus();
+    }, 40);
+  }
+
+  // Boot
+  let state = loadState();
+  if (!state) {
+    state = defaultState();
+    saveState(state);
+    renderStartScreen(state, false);
+    updateChip("Nuevo", "");
+  } else {
+    if (!state.answers || !state.answers.likert) {
+      state = defaultState();
+      saveState(state);
+      renderStartScreen(state, false);
+      updateChip("Reiniciado", "danger");
+    } else {
+      renderStartScreen(state, true);
+      updateChip("Recuperado", "ok");
+    }
+  }
+  </script>
+</body>
+</html>
