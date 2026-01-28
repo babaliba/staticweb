@@ -4,25 +4,30 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>GUSTURA – Cuestionario (offline)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Work+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #0b0c0f;
-      --card: #141621;
-      --muted: #9aa3b2;
-      --text: #eef2ff;
-      --accent: #6ea8fe;
-      --danger: #ff6b6b;
-      --ok: #69db7c;
-      --border: rgba(255,255,255,0.10);
-      --shadow: 0 18px 55px rgba(0,0,0,0.55);
+      --bg: #f1f1f1;
+      --card: #ffffff;
+      --muted: #5d5d5d;
+      --text: #1f1f1f;
+      --accent: #b9cb07;
+      --accent-strong: #99be0e;
+      --cta: #ef8d71;
+      --danger: #d9534f;
+      --ok: #7aa530;
+      --border: #e0e0e0;
+      --shadow: 0 18px 35px rgba(0,0,0,0.12);
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif;
-      background: radial-gradient(1100px 700px at 20% 10%, rgba(110,168,254,0.18), transparent 60%),
-                  radial-gradient(900px 600px at 90% 20%, rgba(105,219,124,0.12), transparent 55%),
-                  var(--bg);
+      font-family: "Open Sans", "Work Sans", Arial, sans-serif;
+      background:
+        linear-gradient(180deg, #fafafa 0%, #f1f1f1 60%, #ededed 100%),
+        var(--bg);
       color: var(--text);
       min-height: 100vh;
       padding: 24px 14px 44px;
@@ -35,14 +40,14 @@
       justify-content: space-between;
       margin-bottom: 14px;
     }
-    h1 { font-size: 20px; margin: 0 0 4px; letter-spacing: 0.2px; }
-    .sub { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.35; }
+    h1 { font-size: 22px; margin: 0 0 4px; letter-spacing: 0.2px; font-family: "Work Sans", "Open Sans", Arial, sans-serif; }
+    .sub { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.45; }
     .chip {
       display: inline-flex;
       align-items: center;
       gap: 8px;
       padding: 10px 12px;
-      background: rgba(255,255,255,0.06);
+      background: #ffffff;
       border: 1px solid var(--border);
       border-radius: 999px;
       color: var(--muted);
@@ -50,7 +55,7 @@
       white-space: nowrap;
     }
     .card {
-      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+      background: var(--card);
       border: 1px solid var(--border);
       border-radius: 18px;
       box-shadow: var(--shadow);
@@ -65,7 +70,7 @@
     }
     .progress {
       height: 10px;
-      background: rgba(255,255,255,0.07);
+      background: #fafafa;
       border: 1px solid var(--border);
       border-radius: 999px;
       overflow: hidden;
@@ -74,19 +79,19 @@
     .progress > div {
       height: 100%;
       width: 0%;
-      background: linear-gradient(90deg, var(--accent), rgba(110,168,254,0.55));
-      border-right: 1px solid rgba(255,255,255,0.25);
+      background: linear-gradient(90deg, var(--accent), var(--accent-strong));
+      border-right: 1px solid rgba(0,0,0,0.08);
       transition: width 240ms ease;
     }
     .meta { color: var(--muted); font-size: 13px; min-width: 180px; text-align: right; }
-    .sectionTitle { font-size: 16px; margin: 0 0 6px; }
-    .questionText { font-size: 18px; line-height: 1.35; margin: 10px 0 14px; }
+    .sectionTitle { font-size: 16px; margin: 0 0 6px; font-family: "Work Sans", "Open Sans", Arial, sans-serif; }
+    .questionText { font-size: 18px; line-height: 1.4; margin: 10px 0 14px; }
     .options { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 14px 0 12px; }
     .opt {
       position: relative;
       border: 1px solid var(--border);
       border-radius: 14px;
-      background: rgba(255,255,255,0.03);
+      background: #ffffff;
       padding: 12px 10px;
       cursor: pointer;
       user-select: none;
@@ -97,13 +102,13 @@
       justify-content: center;
       text-align: center;
       font-size: 13px;
-      color: #d7def0;
+      color: #333333;
     }
-    .opt:hover { transform: translateY(-1px); border-color: rgba(110,168,254,0.55); }
+    .opt:hover { transform: translateY(-1px); border-color: var(--accent); }
     .opt input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
     .opt.selected {
-      background: rgba(110,168,254,0.18);
-      border-color: rgba(110,168,254,0.75);
+      background: rgba(185,203,7,0.12);
+      border-color: var(--accent);
       color: var(--text);
     }
     .hint { color: var(--muted); font-size: 12px; margin-top: 4px; }
@@ -113,7 +118,7 @@
       resize: vertical;
       border-radius: 14px;
       border: 1px solid var(--border);
-      background: rgba(0,0,0,0.25);
+      background: #ffffff;
       color: var(--text);
       padding: 12px 12px;
       font-size: 14px;
@@ -121,14 +126,14 @@
       outline: none;
     }
     textarea:focus {
-      border-color: rgba(110,168,254,0.7);
-      box-shadow: 0 0 0 3px rgba(110,168,254,0.14);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(185,203,7,0.18);
     }
     .actions { display: flex; gap: 10px; justify-content: space-between; align-items: center; margin-top: 14px; flex-wrap: wrap; }
     .btnRow { display: flex; gap: 10px; flex-wrap: wrap; }
     button {
       border: 1px solid var(--border);
-      background: rgba(255,255,255,0.05);
+      background: #ffffff;
       color: var(--text);
       padding: 10px 12px;
       border-radius: 12px;
@@ -136,27 +141,30 @@
       font-size: 13px;
       transition: transform 120ms ease, border-color 150ms ease, background 150ms ease;
     }
-    button:hover { transform: translateY(-1px); border-color: rgba(255,255,255,0.22); }
-    button.primary { background: rgba(110,168,254,0.18); border-color: rgba(110,168,254,0.75); }
-    button.danger { background: rgba(255,107,107,0.14); border-color: rgba(255,107,107,0.55); }
+    button:hover { transform: translateY(-1px); border-color: #cfcfcf; }
+    button.primary { background: var(--cta); border-color: var(--cta); color: #ffffff; }
+    button.danger { background: rgba(217,83,79,0.12); border-color: rgba(217,83,79,0.5); color: #9b2d2a; }
     button:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
     .small { color: var(--muted); font-size: 12px; margin: 0; }
     .divider { height: 1px; background: var(--border); margin: 14px 0; }
     table { width: 100%; border-collapse: collapse; border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
     th, td { padding: 10px 10px; border-bottom: 1px solid var(--border); text-align: left; font-size: 13px; vertical-align: top; }
-    th { background: rgba(255,255,255,0.06); color: #d7def0; font-weight: 600; }
+    th { background: #f7f7f7; color: #333333; font-weight: 600; }
     tr:last-child td { border-bottom: 0; }
     .right { text-align: right; }
     .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
     .notice {
       padding: 10px 12px;
-      border: 1px dashed rgba(255,255,255,0.22);
+      border: 1px dashed #d8d8d8;
       border-radius: 14px;
-      background: rgba(255,255,255,0.03);
+      background: #fafafa;
       color: var(--muted);
       font-size: 12px;
       line-height: 1.35;
     }
+    .radarWrap { margin: 12px 0 6px; display: flex; flex-direction: column; align-items: center; }
+    .radarTitle { font-size: 14px; margin: 0 0 8px; color: #333333; font-weight: 600; }
+    .radarSvg { width: min(420px, 92%); height: auto; }
     @media (max-width: 760px) {
       .options { grid-template-columns: 1fr; }
       .meta { min-width: auto; text-align: left; }
@@ -385,6 +393,39 @@
   }
 
   const STEPS = buildSteps();
+  const RESULTS_INDEX = STEPS.length - 1;
+
+  function firstStepIndexForSection(sectionId) {
+    return STEPS.findIndex(s => s.type === "likert" && s.sectionId === sectionId);
+  }
+
+  function sectionIdAtCursor(idx) {
+    const step = STEPS[idx];
+    if (!step) return null;
+    if (step.type === "likert" || step.type === "observations") return step.sectionId;
+    return null;
+  }
+
+  function previousSectionStartIndex(idx) {
+    const currentSectionId = sectionIdAtCursor(idx);
+    if (!currentSectionId) return 0;
+    const currentSecPos = SURVEY.sections.findIndex(s => s.id === currentSectionId);
+    if (currentSecPos <= 0) return 0;
+    const prevSecId = SURVEY.sections[currentSecPos - 1].id;
+    const prevIdx = firstStepIndexForSection(prevSecId);
+    return prevIdx >= 0 ? prevIdx : 0;
+  }
+
+  function nextSectionStartIndex(idx) {
+    const currentSectionId = sectionIdAtCursor(idx);
+    if (!currentSectionId) return RESULTS_INDEX;
+    const currentSecPos = SURVEY.sections.findIndex(s => s.id === currentSectionId);
+    if (currentSecPos < 0) return RESULTS_INDEX;
+    const nextSec = SURVEY.sections[currentSecPos + 1];
+    if (!nextSec) return RESULTS_INDEX;
+    const nextIdx = firstStepIndexForSection(nextSec.id);
+    return nextIdx >= 0 ? nextIdx : RESULTS_INDEX;
+  }
 
   function defaultState() {
     return {
@@ -420,11 +461,15 @@
 
   function updateChip(text, tone) {
     const chip = document.getElementById("statusChip");
+    const styles = getComputedStyle(document.documentElement);
+    const ok = styles.getPropertyValue("--ok").trim() || "#7aa530";
+    const danger = styles.getPropertyValue("--danger").trim() || "#d9534f";
+    const border = styles.getPropertyValue("--border").trim() || "#e0e0e0";
     chip.textContent = text;
-    chip.style.borderColor = tone === "ok" ? "rgba(105,219,124,0.55)" :
-                           tone === "danger" ? "rgba(255,107,107,0.55)" : "rgba(255,255,255,0.18)";
-    chip.style.background = tone === "ok" ? "rgba(105,219,124,0.14)" :
-                          tone === "danger" ? "rgba(255,107,107,0.14)" : "rgba(255,255,255,0.06)";
+    chip.style.borderColor = tone === "ok" ? ok :
+                           tone === "danger" ? danger : border;
+    chip.style.background = tone === "ok" ? "rgba(122,165,48,0.12)" :
+                          tone === "danger" ? "rgba(217,83,79,0.12)" : "#ffffff";
   }
 
   function isTypingTarget(el) {
@@ -473,6 +518,13 @@
     return bySection;
   }
 
+  function formatNumberES(value, digits = 2) {
+    return Number(value || 0).toLocaleString("es-ES", {
+      minimumFractionDigits: digits,
+      maximumFractionDigits: digits
+    });
+  }
+
   function downloadBlob(filename, mime, content) {
     const blob = new Blob([content], { type: mime });
     const url = URL.createObjectURL(blob);
@@ -514,6 +566,99 @@
     });
 
     return rows.join("\n");
+  }
+
+  function truncateLabel(text, max) {
+    if (!text) return "";
+    if (text.length <= max) return text;
+    return text.slice(0, Math.max(0, max - 1)) + "…";
+  }
+
+  function buildRadarSVG(stats) {
+    const sections = SURVEY.sections;
+    const count = sections.length;
+    const size = 320;
+    const pad = 28;
+    const labelPad = 42;
+    const r = (size / 2) - pad;
+    const cx = labelPad + (size / 2);
+    const cy = labelPad + (size / 2);
+
+    const minValue = 1;
+    const maxValue = 4;
+    const steps = 4;
+    const rings = Array.from({ length: steps }, (_, i) => (i + 1) / steps);
+
+    function pointAt(angle, radius) {
+      const x = cx + Math.cos(angle) * radius;
+      const y = cy + Math.sin(angle) * radius;
+      return [x, y];
+    }
+
+    const axis = sections.map((sec, i) => {
+      const angle = (Math.PI * 2 * i / count) - Math.PI / 2;
+      const [x, y] = pointAt(angle, r);
+      const labelRadius = r + 18;
+      const [lx, ly] = pointAt(angle, labelRadius);
+      return { angle, x, y, lx, ly, label: sec.title };
+    });
+
+    const values = sections.map((sec, i) => {
+      const st = stats[sec.id];
+      const raw = st && st.rawAvg ? st.rawAvg : minValue;
+      const clamped = Math.max(minValue, Math.min(maxValue, raw));
+      const v = clamped / maxValue;
+      const angle = axis[i].angle;
+      const [x, y] = pointAt(angle, v * r);
+      return { x, y, value: clamped };
+    });
+
+    const polygon = values.map(p => `${p.x.toFixed(2)},${p.y.toFixed(2)}`).join(" ");
+
+    const ringPolys = rings.map((t) => {
+      const pts = axis.map(a => {
+        const [x, y] = pointAt(a.angle, r * t);
+        return `${x.toFixed(2)},${y.toFixed(2)}`;
+      }).join(" ");
+      return `<polygon points="${pts}" fill="none" stroke="#d9d9d9" stroke-width="1" />`;
+    }).join("");
+
+    const ringLabels = rings.map((t, i) => {
+      const value = (i + 1);
+      const angle = -Math.PI / 2 - 0.22;
+      const [x, y] = pointAt(angle, (r * t) - 8);
+      return `<text x="${x.toFixed(2)}" y="${(y - 2).toFixed(2)}" fill="#7a7a7a" font-size="9" text-anchor="middle">${value}</text>`;
+    }).join("");
+
+    const axes = axis.map(a =>
+      `<line x1="${cx}" y1="${cy}" x2="${a.x.toFixed(2)}" y2="${a.y.toFixed(2)}" stroke="#d9d9d9" stroke-width="1" />`
+    ).join("");
+
+    const labels = axis.map((a, i) => {
+      const anchor = Math.abs(a.lx - cx) < 4 ? "middle" : (a.lx > cx ? "start" : "end");
+      const v = formatNumberES(values[i].value, 2);
+      const valY = (a.ly + 12);
+      const label = truncateLabel(a.label, 16);
+      return `
+        <text x="${a.lx.toFixed(2)}" y="${a.ly.toFixed(2)}" fill="#333333" font-size="11" text-anchor="${anchor}">${label}</text>
+        <text x="${a.lx.toFixed(2)}" y="${valY.toFixed(2)}" fill="#7a7a7a" font-size="11" text-anchor="${anchor}">${v}</text>
+      `;
+    }).join("");
+
+    const markers = values.map(p =>
+      `<circle cx="${p.x.toFixed(2)}" cy="${p.y.toFixed(2)}" r="3" fill="#b9cb07" stroke="#7a7a7a" stroke-width="0.6" />`
+    ).join("");
+
+    return `
+      <svg class="radarSvg" viewBox="0 0 ${size + (labelPad * 2)} ${size + (labelPad * 2)}" role="img" aria-label="Radar por sección">
+        ${ringPolys}
+        ${ringLabels}
+        ${axes}
+        <polygon points="${polygon}" fill="rgba(185,203,7,0.20)" stroke="#b9cb07" stroke-width="2" />
+        ${markers}
+        ${labels}
+      </svg>
+    `;
   }
 
   function renderStartScreen(state, existing) {
@@ -598,8 +743,12 @@
 
           <div class="actions">
             <div class="btnRow">
+              <button id="btnHome">Inicio</button>
+              <button id="btnPrevSection">Sección anterior</button>
               <button id="btnPrev">Anterior</button>
               <button class="primary" id="btnNext" ${typeof current === "number" ? "" : "disabled"}>Siguiente</button>
+              <button id="btnNextSection">Sección siguiente</button>
+              <button id="btnEnd">Final</button>
             </div>
             <div class="btnRow">
               <button id="btnSave">Guardar</button>
@@ -641,8 +790,12 @@
 
           <div class="actions">
             <div class="btnRow">
+              <button id="btnHome">Inicio</button>
+              <button id="btnPrevSection">Sección anterior</button>
               <button id="btnPrev">Anterior</button>
               <button class="primary" id="btnNext">Siguiente</button>
+              <button id="btnNextSection">Sección siguiente</button>
+              <button id="btnEnd">Final</button>
             </div>
             <div class="btnRow">
               <button id="btnSave">Guardar</button>
@@ -676,8 +829,12 @@
 
           <div class="actions">
             <div class="btnRow">
+              <button id="btnHome">Inicio</button>
+              <button id="btnPrevSection">Sección anterior</button>
               <button id="btnPrev">Anterior</button>
               <button class="primary" id="btnNext">Siguiente</button>
+              <button id="btnNextSection">Sección siguiente</button>
+              <button id="btnEnd">Final</button>
             </div>
             <div class="btnRow">
               <button id="btnSave">Guardar</button>
@@ -708,7 +865,7 @@
             <td>${sec.title}</td>
             <td class="right mono">${st.answered} / ${st.nQuestions}</td>
             <td class="right mono">${st.rawSum} / ${st.max}</td>
-            <td class="right mono">${st.rawAvg.toFixed(2)}</td>
+            <td class="right mono">${formatNumberES(st.rawAvg, 2)}</td>
             <td class="right mono">${pctRaw}%</td>
           </tr>
         `;
@@ -767,13 +924,18 @@
                 <th>Total global</th>
                 <th class="right mono">${overall.answered} / ${overall.n}</th>
                 <th class="right mono">${overall.sum} / ${overall.max}</th>
-                <th class="right mono">${overallAvg.toFixed(2)}</th>
+                <th class="right mono">${formatNumberES(overallAvg, 2)}</th>
                 <th class="right mono">${overallPct}%</th>
               </tr>
             </tbody>
           </table>
 
           <div class="divider"></div>
+
+          <div class="radarWrap">
+            <div class="radarTitle">Radar por sección (media 1–4)</div>
+            ${buildRadarSVG(stats)}
+          </div>
 
           <div class="actions">
             <div class="btnRow">
@@ -825,6 +987,10 @@
     const btnNext = app.querySelector("#btnNext");
     const btnSave = app.querySelector("#btnSave");
     const btnReset = app.querySelector("#btnReset");
+    const btnHome = app.querySelector("#btnHome");
+    const btnPrevSection = app.querySelector("#btnPrevSection");
+    const btnNextSection = app.querySelector("#btnNextSection");
+    const btnEnd = app.querySelector("#btnEnd");
 
     if (btnPrev) {
       btnPrev.disabled = (state.cursor <= 0);
@@ -836,6 +1002,22 @@
     }
 
     if (btnSave) btnSave.onclick = () => saveState(state);
+
+    if (btnHome) {
+      btnHome.onclick = () => goTo(state, 0);
+    }
+
+    if (btnPrevSection) {
+      btnPrevSection.onclick = () => goTo(state, previousSectionStartIndex(state.cursor));
+    }
+
+    if (btnNextSection) {
+      btnNextSection.onclick = () => goTo(state, nextSectionStartIndex(state.cursor));
+    }
+
+    if (btnEnd) {
+      btnEnd.onclick = () => goTo(state, RESULTS_INDEX);
+    }
 
     if (btnReset) {
       btnReset.onclick = () => {
